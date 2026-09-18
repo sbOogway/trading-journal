@@ -8,6 +8,7 @@ import BackToPrevious from "@components/BackToPrevious.astro";
 import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import TradeCard from "@components/TradeCard.astro";
+import TradeChart from "@components/TradeChart.astro";
 
 export async function getStaticPaths() {
   const posts = (await getCollection("blog"))
@@ -93,6 +94,25 @@ const { Content, headings } = await render(post);
           platform={post.data.platform}
           side={post.data.side}
           risk={post.data.risk}
+          entry={post.data.entry}
+          fill={post.data.fill}
+          stop={post.data.stop}
+          target={post.data.target}
+          date={post.data.date}
+        />
+      </div>
+    )}
+    {post.data.asset && post.data.side && post.data.entry !== undefined && (
+      <div class="animate mb-10">
+        <TradeChart
+          asset={post.data.asset}
+          platform={post.data.platform}
+          side={post.data.side}
+          entry={post.data.entry}
+          fill={post.data.fill}
+          stop={post.data.stop}
+          target={post.data.target}
+          timeframe={post.data.timeframe}
           date={post.data.date}
         />
       </div>

@@ -1,0 +1,67 @@
+---
+import { fetchCandles, type Timeframe } from "@lib/candles";
+
+type Props = {
+  asset: string;
+  platform?: string;
+  side: "LONG" | "SHORT";
+  entry: number;
+  fill?: number;
+  stop?: number;
+  target?: number;
+  timeframe: Timeframe;
+  date: Date;
+};
+
+const { asset, platform, side, entry, fill, stop, target, timeframe, date } = Astro.props;
+
+// Candles are fetched once at build time and inlined; the browser never calls the exchange.
+const candles = await fetchCandles({ platform, symbol: asset, timeframe, at: date });
+
+const trade = {
+  asset,
+  side,
+  entry,
+  fill: fill ?? null,
+  stop: stop ?? null,
+  target: target ?? null,
+  time: Math.floor(date.getTime() / 1000),
+  timeframe,
+};
+---
+
+{
+  candles.length > 0 ? (
+    <figure class="not-prose">
+      <div
+        class="trade-chart h-80 w-full rounded-lg border border-black/15 dark:border-white/20"
+        data-trade={JSON.stringify(trade)}
+        data-candles={JSON.stringify(candles)}
+      />
+      <figcaption class="mt-2 text-xs text-black/50 dark:text-white/50">
+        {asset} · {timeframe} · {platform ?? "BYBIT"}
+      </figcaption>
+    </figure>
+  ) : (
+    <p class="text-sm text-black/50 dark:text-white/50">
+      No chart data available for {asset}.
+    </p>
+  )
+}
+
+<script>
+  import { mountTradeChart } from "@scripts/trade-chart";
+
+  function mountAll() {
+    document
+      .querySelectorAll<HTMLElement>(".trade-chart:not([data-mounted])")
+      .forEach((el) => {
+        el.dataset.mounted = "true";
+        mountTradeChart(el);
+      });
+  }
+
+  // Runs on first load and after every view transition.
+  document.addEventListener("astro:page-load", mountAll);
+  mountAll();
+</script>

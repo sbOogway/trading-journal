@@ -4,10 +4,21 @@ type Props = {
   platform?: string;
   side?: "LONG" | "SHORT";
   risk?: string;
+  entry?: number;
+  fill?: number;
+  stop?: number;
+  target?: number;
   date: Date;
 };
 
-const { asset, platform, side, risk, date } = Astro.props;
+const { asset, platform, side, risk, entry, fill, stop, target, date } = Astro.props;
+
+// Reward:risk measured from the actual fill when there is one.
+const anchor = fill ?? entry;
+const rr =
+  anchor !== undefined && stop !== undefined && target !== undefined && anchor !== stop
+    ? (Math.abs(target - anchor) / Math.abs(stop - anchor)).toFixed(2)
+    : undefined;
 
 const opened = date.toLocaleString("en-GB", {
   dateStyle: "medium",
@@ -54,6 +65,38 @@ const value = "text-sm font-semibold text-black dark:text-white";
     <div class={cell}>
       <dt class={label}>Risk</dt>
       <dd class={value}>{risk}</dd>
+    </div>
+  )}
+  {entry !== undefined && (
+    <div class={cell}>
+      <dt class={label}>Entry</dt>
+      <dd class={`${value} font-mono`}>
+        {fill !== undefined && fill !== entry ? (
+          <>
+            {fill} <span class="font-normal text-black/50 dark:text-white/50">(planned {entry})</span>
+          </>
+        ) : (
+          entry
+        )}
+      </dd>
+    </div>
+  )}
+  {stop !== undefined && (
+    <div class={cell}>
+      <dt class={label}>Stop</dt>
+      <dd class={`${value} font-mono text-rose-600 dark:text-rose-400`}>{stop}</dd>
+    </div>
+  )}
+  {target !== undefined && (
+    <div class={cell}>
+      <dt class={label}>Target</dt>
+      <dd class={`${value} font-mono text-emerald-600 dark:text-emerald-400`}>{target}</dd>
+    </div>
+  )}
+  {rr && (
+    <div class={cell}>
+      <dt class={label}>R:R</dt>
+      <dd class={`${value} font-mono`}>{rr}</dd>
     </div>
   )}
   <div class={cell}>

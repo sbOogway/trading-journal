@@ -15,6 +15,12 @@ const blog = defineCollection({
     platform: z.string().optional(),
     side: z.enum(["LONG", "SHORT"]).optional(),
     risk: z.string().optional(),
+    // Trade levels, drawn on the chart by <TradeChart />. Requires `asset` and `side`.
+    entry: z.number().optional(), // planned entry price
+    fill: z.number().optional(), // actual fill price, if different from entry
+    stop: z.number().optional(),
+    target: z.number().optional(),
+    timeframe: z.enum(["1m", "5m", "15m", "30m", "1h", "4h", "1d"]).default("1h"),
   }),
 });
 
