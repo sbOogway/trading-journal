@@ -1,112 +1,84 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { withBase } from '../utils';
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import { SITE, HOME, SOCIALS } from "@consts";
+import ArrowCard from "@components/ArrowCard.astro";
+import Link from "@components/Link.astro";
+import { getCollection } from "astro:content";
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const blog = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			ul {
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			li {
-				border-bottom: 1px solid rgb(var(--gray-light));
-			}
-			li a {
-				display: flex;
-				align-items: baseline;
-				gap: 1em;
-				padding: 1em 0;
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			.meta {
-				display: flex;
-				align-items: center;
-				gap: 0.5em;
-				flex-shrink: 0;
-				width: 12em;
-				font-family: monospace;
-				font-size: 0.8em;
-				color: rgb(var(--gray));
-			}
-			.side {
-				padding: 0 0.5em;
-				border-radius: 999px;
-				font-weight: 700;
-				color: white;
-			}
-			.side.long {
-				background: #1a9e5a;
-			}
-			.side.short {
-				background: #d33f49;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1.2;
-				flex-grow: 1;
-			}
-			.date {
-				flex-shrink: 0;
-				font-size: 0.8em;
-				color: rgb(var(--gray));
-			}
-			li a:hover .title {
-				color: rgb(var(--accent));
-			}
-			@media (max-width: 720px) {
-				li a {
-					flex-wrap: wrap;
-				}
-				.meta {
-					width: 100%;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={withBase(`/blog/${post.id}/`)}>
-									<span class="meta">
-										{post.data.side && (
-											<span class:list={['side', post.data.side.toLowerCase()]}>
-												{post.data.side}
-											</span>
-										)}
-										{post.data.asset}
-									</span>
-									<h4 class="title">{post.data.title}</h4>
-									<span class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</span>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Layout title={HOME.TITLE} description={HOME.DESCRIPTION}>
+  <Container>
+    <aside data-pagefind-ignore>
+      <h1 class="font-semibold text-black dark:text-white">
+        Trading Journal
+      </h1>
+      <div class="space-y-16">
+        <section>
+          <article class="space-y-4">
+            <p>
+              A public trading journal. Every entry documents a single trade: the
+              thesis behind it, how the execution actually went, and what it felt
+              like along the way.
+            </p>
+            <p class="animate">
+              The goal is not to show off winners. It is to keep an honest record
+              of decisions so that patterns, good and bad, become visible over time.
+            </p>
+          </article>
+        </section>
+
+        <section class="animate space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-y-2">
+            <h2 class="font-semibold text-black dark:text-white">
+              Latest entries
+            </h2>
+            <Link href="/blog"> See all entries </Link>
+          </div>
+          <ul class="not-prose flex flex-col gap-4">
+            {
+              blog.map((post) => (
+                <li>
+                  <ArrowCard entry={post} />
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section class="animate space-y-4">
+          <h2 class="font-semibold text-black dark:text-white">Elsewhere</h2>
+          <ul class="not-prose flex flex-wrap gap-2">
+            {
+              SOCIALS.map((SOCIAL) => (
+                <li class="flex gap-x-2 text-nowrap">
+                  <Link
+                    href={SOCIAL.HREF}
+                    external
+                    aria-label={`${SITE.TITLE} on ${SOCIAL.NAME}`}
+                  >
+                    {SOCIAL.NAME}
+                  </Link>
+                  {"/"}
+                </li>
+              ))
+            }
+            <li class="line-clamp-1">
+              <Link
+                href={`mailto:${SITE.EMAIL}`}
+                aria-label={`Email ${SITE.TITLE}`}
+              >
+                {SITE.EMAIL}
+              </Link>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </aside>
+  </Container>
+</Layout>

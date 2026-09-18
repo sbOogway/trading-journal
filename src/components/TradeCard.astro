@@ -1,91 +1,63 @@
 ---
-interface Props {
-	asset?: string;
-	platform?: string;
-	side?: 'LONG' | 'SHORT';
-	risk?: string;
-	date: Date;
-}
+type Props = {
+  asset?: string;
+  platform?: string;
+  side?: "LONG" | "SHORT";
+  risk?: string;
+  date: Date;
+};
 
 const { asset, platform, side, risk, date } = Astro.props;
+
+const opened = date.toLocaleString("en-GB", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "UTC",
+});
+
+const cell = "flex flex-col gap-0.5";
+const label = "font-mono text-[0.65rem] uppercase tracking-widest text-black/50 dark:text-white/50";
+const value = "text-sm font-semibold text-black dark:text-white";
 ---
 
-<dl class="trade-card">
-	{asset && (
-		<div>
-			<dt>Asset</dt>
-			<dd class="asset">{asset}</dd>
-		</div>
-	)}
-	{side && (
-		<div>
-			<dt>Side</dt>
-			<dd><span class:list={['side', side.toLowerCase()]}>{side}</span></dd>
-		</div>
-	)}
-	{platform && (
-		<div>
-			<dt>Platform</dt>
-			<dd>{platform}</dd>
-		</div>
-	)}
-	{risk && (
-		<div>
-			<dt>Risk</dt>
-			<dd>{risk}</dd>
-		</div>
-	)}
-	<div>
-		<dt>Opened</dt>
-		<dd>
-			<time datetime={date.toISOString()}>
-				{date.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' })}
-			</time>
-		</dd>
-	</div>
+<dl
+  class="not-prose flex flex-wrap gap-x-8 gap-y-4 rounded-lg border border-black/15 px-4 py-3 dark:border-white/20"
+>
+  {asset && (
+    <div class={cell}>
+      <dt class={label}>Asset</dt>
+      <dd class={`${value} font-mono`}>{asset}</dd>
+    </div>
+  )}
+  {side && (
+    <div class={cell}>
+      <dt class={label}>Side</dt>
+      <dd>
+        <span
+          class:list={[
+            "rounded-sm px-1.5 py-0.5 font-mono text-xs font-semibold text-white",
+            side === "LONG" ? "bg-emerald-600" : "bg-rose-600",
+          ]}
+        >
+          {side}
+        </span>
+      </dd>
+    </div>
+  )}
+  {platform && (
+    <div class={cell}>
+      <dt class={label}>Platform</dt>
+      <dd class={value}>{platform}</dd>
+    </div>
+  )}
+  {risk && (
+    <div class={cell}>
+      <dt class={label}>Risk</dt>
+      <dd class={value}>{risk}</dd>
+    </div>
+  )}
+  <div class={cell}>
+    <dt class={label}>Opened</dt>
+    <dd class={value}><time datetime={date.toISOString()}>{opened}</time></dd>
+  </div>
 </dl>
-
-<style>
-	.trade-card {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1.5em 2.5em;
-		margin: 0 0 2em;
-		padding: 1em 1.5em;
-		border: 1px solid rgb(var(--gray-light));
-		border-radius: 12px;
-		background: white;
-		box-shadow: 0 2px 6px rgba(var(--gray), 15%);
-		font-size: 0.85em;
-	}
-	.trade-card > div {
-		display: flex;
-		flex-direction: column;
-	}
-	dt {
-		font-size: 0.75em;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: rgb(var(--gray));
-	}
-	dd {
-		margin: 0;
-		font-weight: 700;
-		color: rgb(var(--black));
-	}
-	.asset {
-		font-family: monospace;
-		font-size: 1.1em;
-	}
-	.side {
-		padding: 0.1em 0.6em;
-		border-radius: 999px;
-		color: white;
-	}
-	.side.long {
-		background: #1a9e5a;
-	}
-	.side.short {
-		background: #d33f49;
-	}
-</style>

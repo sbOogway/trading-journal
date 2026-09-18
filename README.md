@@ -1,6 +1,6 @@
 # Trading Journal
 
-A public trading journal built with [Astro](https://astro.build) and published to GitHub Pages at
+A public trading journal built with [Astro](https://astro.build) on the [Astro Micro](https://github.com/trevortylerlee/astro-micro) theme, published to GitHub Pages at
 https://sboogway.github.io/trading-journal/
 
 ## Writing an entry
@@ -11,7 +11,7 @@ Add a Markdown file to `src/content/blog/`. The frontmatter drives the trade car
 ---
 title: "ETHUSDT short: chasing the entry"
 description: "One-line summary (optional)"
-pubDate: 2026-09-18T17:30:13
+date: 2026-09-18T17:30:13
 asset: ETHUSDT
 platform: BYBIT
 side: SHORT          # LONG | SHORT
@@ -51,7 +51,9 @@ after `npm run build`. The hook is installed automatically by `npm install` (via
 
 - `src/content/blog/` — journal entries
 - `src/components/TradeCard.astro` — the trade metadata card
-- `src/pages/index.astro` — the entry list on the homepage
-- `src/layouts/BlogPost.astro` — single-entry layout
-- `src/styles/global.css` — colours, fonts, typography
-- `src/consts.ts` — site title and description
+- `src/components/ArrowCard.astro` — entry row in lists (side badge + asset)
+- `src/pages/index.astro` — homepage; `src/pages/blog/index.astro` — all entries by year
+- `src/pages/blog/[...id].astro` — single-entry page
+- `src/styles/global.css` — colours, fonts, typography (Tailwind)
+- `src/consts.ts` — site title, description, socials
+- `src/lib/utils.ts` — `withBase()` for links under the `/trading-journal` base path
