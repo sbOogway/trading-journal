@@ -32,10 +32,20 @@ The schema lives in `src/content.config.ts`.
 | `npm run dev`     | Start local dev server at `localhost:4321`   |
 | `npm run build`   | Build the production site to `./dist/`       |
 | `npm run preview` | Preview the build locally before deploying   |
+| `npm run deploy`  | Push `./dist/` to the `gh-pages` branch       |
 
 ## Deploying
 
-Every push to `main` triggers `.github/workflows/deploy.yml`, which builds the site and publishes it to GitHub Pages.
+Deployment is a git hook, not CI. A husky `pre-push` hook (`.husky/pre-push`) runs on every
+`git push` from `main`: it builds the site and pushes `dist/` to the `gh-pages` branch, which
+GitHub Pages serves. So the workflow is just:
+
+```sh
+git add . && git commit -m "New entry" && git push
+```
+
+To publish without pushing `main` (e.g. after only changing something locally), run `npm run deploy`
+after `npm run build`. The hook is installed automatically by `npm install` (via the `prepare` script).
 
 ## Where things are
 

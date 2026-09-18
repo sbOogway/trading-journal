@@ -1,0 +1,6 @@
+# Publish the site when pushing main: build, then push dist/ to the gh-pages branch.
+branch="$(git rev-parse --abbrev-ref HEAD)"
+if [ "$branch" = "main" ]; then
+  echo "pre-push: building site and publishing to gh-pages..."
+  npm run build && npm run deploy
+fi
