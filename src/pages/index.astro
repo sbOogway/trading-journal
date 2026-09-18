@@ -1,0 +1,112 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { withBase } from '../utils';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			ul {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			li {
+				border-bottom: 1px solid rgb(var(--gray-light));
+			}
+			li a {
+				display: flex;
+				align-items: baseline;
+				gap: 1em;
+				padding: 1em 0;
+				text-decoration: none;
+				transition: 0.2s ease;
+			}
+			.meta {
+				display: flex;
+				align-items: center;
+				gap: 0.5em;
+				flex-shrink: 0;
+				width: 12em;
+				font-family: monospace;
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+			}
+			.side {
+				padding: 0 0.5em;
+				border-radius: 999px;
+				font-weight: 700;
+				color: white;
+			}
+			.side.long {
+				background: #1a9e5a;
+			}
+			.side.short {
+				background: #d33f49;
+			}
+			.title {
+				margin: 0;
+				color: rgb(var(--black));
+				line-height: 1.2;
+				flex-grow: 1;
+			}
+			.date {
+				flex-shrink: 0;
+				font-size: 0.8em;
+				color: rgb(var(--gray));
+			}
+			li a:hover .title {
+				color: rgb(var(--accent));
+			}
+			@media (max-width: 720px) {
+				li a {
+					flex-wrap: wrap;
+				}
+				.meta {
+					width: 100%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+				<ul>
+					{
+						posts.map((post) => (
+							<li>
+								<a href={withBase(`/blog/${post.id}/`)}>
+									<span class="meta">
+										{post.data.side && (
+											<span class:list={['side', post.data.side.toLowerCase()]}>
+												{post.data.side}
+											</span>
+										)}
+										{post.data.asset}
+									</span>
+									<h4 class="title">{post.data.title}</h4>
+									<span class="date">
+										<FormattedDate date={post.data.pubDate} />
+									</span>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
